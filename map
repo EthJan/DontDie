@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disaster Map</title>
+    <style>
+        /* Set the size of the div element that contains the map */
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <!-- Load the Maps JavaScript API with the specific API key -->
+    <!-- Correct way to include API key in the template -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}"></script>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        function initMap() {
+            // Map options
+            var options = {
+                center: { lat: 37.7749, lng: -122.4194 }, // Example: San Francisco
+                zoom: 8
+            };
+
+            // New map
+            var map = new google.maps.Map(document.getElementById('map'), options);
+
+            // Add marker
+            var marker = new google.maps.Marker({
+                position: { lat: 37.7749, lng: -122.4194 },
+                map: map,
+                title: 'Disaster Location'
+            });
+
+            // Optional: Add info window
+            var infoWindow = new google.maps.InfoWindow({
+                content: '<h3>Disaster Title</h3><p>Description of the disaster.</p>'
+            });
+
+            marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+            });
+        }
+
+        // Initialize the map after the API has loaded
+        google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+</body>
+</html>
+
