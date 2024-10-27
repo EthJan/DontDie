@@ -1,5 +1,6 @@
 import './Volunteer.css';
 import { useState, useEffect } from 'react';
+import VolunteerMatch from './VolunteerMatch';
 
 const Volunteer = () => {
   const [name, setName] = useState('');
@@ -8,6 +9,9 @@ const Volunteer = () => {
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({name: false, phone: false, email: false, address: false});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [matchedOrganizations, setMatchedOrganizations] = useState([]);
 
   // improved user experience by providing feedback to the user when the form is invalid as a future feature
   // implement when boxes are touched the boxes turn red
@@ -48,25 +52,13 @@ const Volunteer = () => {
         }),
       })
         .then((response) => response.json())
-        .then((data) => console.log(data))
+        .then((data) => {
+          console.log(data["matched_organizations"]);
+          setMatchedOrganizations(data["matched_organizations"]);
+        })
         .catch((error) => console.error("Error:", error));
       console.log("Submitted");
-
-      fetch("http://127.0.0.1:5000/volunteerSubmit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          phone: phone,
-          email: email,
-          address: address
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error("Error:", error));
+      setIsSubmitted(true);
 
       setName("");
       setPhone("");
@@ -93,6 +85,8 @@ const Volunteer = () => {
         <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" />
 
         <button onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
+
+        {isSubmitted && <VolunteerMatch matchedOrganizations={matchedOrganizations} />}
 		  </div>
     );
 }

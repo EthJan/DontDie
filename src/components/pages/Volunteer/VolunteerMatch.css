@@ -1,0 +1,31 @@
+.match ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.match ul li {
+  margin-bottom: 1rem;
+}
+
+.match {
+    margin-bottom: 5rem;
+    width: 80%;
+}
+
+.match h4 {
+    font-size: 1.5rem;
+    margin: 2rem 0 1rem 0;
+}
+
+.match a {
+    text-decoration: none;
+    color: hsl(0, 0%, 30%);
+    transition: color 0.3s, transform 0.3s;
+    font-size: 1.1rem;
+}
+
+.match a:hover {
+    color: hsl(120, 80%, 30%);
+    cursor: pointer;
+    transform: scale(1.1);
+}
