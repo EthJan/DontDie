@@ -74,6 +74,8 @@ const Report = () => {
           <option value="tornado">Tornado</option>
           <option value="drought">Drought</option>
           <option value="volcano">Volcano</option>
+          <option value="landslide">Landslide</option>
+          <option value="earthquake">Earthquake</option>
           <option value="other">Other</option>
         </select>
 
