@@ -89,7 +89,7 @@ function Home() {
 			{error ? (
 				<p>{error}</p>
 			) : (
-				<div id="map" className="home"></div>
+				<div id="map" className="map"></div>
 			)}
 		</div>
 	);
