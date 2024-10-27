@@ -2,22 +2,39 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sqlite3
 from geocode import geocode_address  # Ensure this is an importable function
-import logging
+import math
 
-# Database setup
 disaster_database = "disaster_detail.db"
 with sqlite3.connect(disaster_database) as conn:
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS disaster_data (
         address TEXT,
-        long INT,
-        lat INT,
+        d_long REAL,
+        d_lat REAL,
         category TEXT,
         status TEXT,
         description TEXT
     )
     ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS volunteer_data (
+        name TEXT,
+        phone INT,
+        email TEXT,
+        v_long REAL,
+        v_lat REAL
+    )
+    ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS organization_data (
+        name TEXT,
+        website TEXT,
+        o_long REAL,
+        o_lat REAL,
+        radius REAL
+    )
+    ''')#add radius code later
     conn.commit()
 
 # Flask app setup
@@ -30,11 +47,118 @@ def add_data(address, longitude, latitude, category, status, description):
     with sqlite3.connect(disaster_database) as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO disaster_data (address, long, lat, category, status, description)
+            INSERT INTO disaster_data (address, d_long, d_lat, category, status, description)
             VALUES (?, ?, ?, ?, ?, ?)
         ''', (address, longitude, latitude, category, status, description))
         conn.commit()
     return True
+
+#add data into the volunteer table:
+def add_volunteer_data(name_, phone_, email_, longitude_, latitude_):
+    with sqlite3.connect(disaster_database) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO volunteer_data (name, phone, email, v_long, v_lat)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name_, phone_, email_, longitude_, latitude_))
+        conn.commit()
+    return True
+
+#add data into the organization table:
+def add_organization_data(name_, radius_, website_, longitude_, latitude_):
+    with sqlite3.connect(disaster_database) as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO organization_data (name, website, o_long, o_lat, radius)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name_, website_, longitude_, latitude_, radius_))
+        conn.commit()
+    return True
+
+@app.route("/organizationSubmit", methods=["GET", "POST"])
+def handle_organization():
+    org_data = request.get_json()
+    
+    #might need error checking
+    name = org_data.get("name")
+    address = org_data.get("address")
+    website = org_data.get("website")
+    radius = org_data.get("radius")
+
+    address_json = {"address": address}
+    result = handle_geocode(address_json)
+    olat = result.get("latitude")
+    olong = result.get("longitude")
+    add_organization_data(name, radius, website, olong, olat)
+
+    return jsonify({"message": "Organization added successfully"}), 201
+
+
+def haversine_distance(lat1, lng1, lat2, lng2):
+    # Calculate the great-circle distance between two points on the Earth
+    R = 6371  # Earth radius in kilometers
+
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lng2 - lng1)
+
+    a = math.sin(delta_phi / 2) ** 2 + \
+        math.cos(phi1) * math.cos(phi2) * \
+        math.sin(delta_lambda / 2) ** 2
+
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    return R * c  # Distance in kilometers
+
+def match_volunteer_to_organizations(volunteer_lat, volunteer_lng):
+    matched_orgs = []
+    with sqlite3.connect(disaster_database) as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT name, website, o_long, o_lat, radius FROM organization_data')
+        organizations = cursor.fetchall()
+
+        for org in organizations:
+            name, website, org_lng, org_lat, org_radius = org
+            distance = haversine_distance(volunteer_lat, volunteer_lng, org_lat, org_lng)
+            if distance <= org_radius:
+                matched_orgs.append({
+                    "name": name,
+                    "website": website,
+                    "o_long": org_lng,
+                    "o_lat": org_lat,
+                    "radius": org_radius,
+                    "distance_km": round(distance, 2)
+                })
+
+    return matched_orgs
+
+@app.route("/volunteerSubmit", methods=["GET", "POST"])
+def handle_volunteer():
+    volunteer_data = request.get_json()
+    
+    #might need error checking
+    name = volunteer_data.get("name")
+    address = volunteer_data.get("address")
+    phone = volunteer_data.get("phone")
+    email = volunteer_data.get("email")
+
+    address_json = {"address": address}
+    result = handle_geocode(address_json)
+    v_lat = result.get("latitude")
+    v_long = result.get("longitude")
+    add_volunteer_data(name, phone, email, v_long, v_lat)
+
+    # Match volunteer with organizations using the revised function
+    matched_organizations = match_volunteer_to_organizations(v_lat, v_long)
+
+    # Return the matched organizations to the frontend
+    return jsonify({
+        "message": "Personal info entered successfully",
+        "volunteer_location": {"lat": v_lat, "lng": v_long},
+        "matched_organizations": matched_organizations
+    }), 201
 
 # Route to handle reporting a disaster
 @app.route("/reportSubmit", methods=["POST", "GET"])
@@ -49,11 +173,7 @@ def handle_report():
         description = data.get("description")
 
         address_json = {"address": address}
-        #print(address_json)
         result=(handle_geocode(address_json))
-
-        # Debugging line to print the result of geocoding
-        #print("Geocode result:", result)
 
         # Check if geocoding was successful
         if not result:

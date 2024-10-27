@@ -14,9 +14,9 @@ def geocode_address(address):
     #print("Geocode API response:", geocode_data)
 
     # Check if the response contains results
-    if geocode_data["status"] != "OK" or not geocode_data["results"]:
-        logging.error("Geocoding API did not return OK status or results are empty.")
-        return None
+    # if geocode_data["status"] != "OK" or not geocode_data["results"]:
+    #     logging.error("Geocoding API did not return OK status or results are empty.")
+    #     return None
 
     # Correct extraction of latitude and longitude from the JSON response
     location = geocode_data["results"][0]["geometry"]["location"]
