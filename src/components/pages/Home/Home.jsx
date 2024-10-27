@@ -209,7 +209,7 @@ function Home() {
                 });
 
                 const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<h3>${location.status + ' ' + location.category}</h3><p>${location.address}</p><p>${location.description}</p>`,
+                    content: `<h3>${location.category + ` (` + location.status + `)`}</h3><p>${location.address}</p><p>${location.description}</p>`,
                 });
 
                 marker.addListener('click', () => {
@@ -237,7 +237,7 @@ function Home() {
                 });
 
                 const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<h3>${org.name}</h3><p>${org.radius} km radius</p>`,
+                    content: `<h3>${org.name}</h3><a href=${org.website}>${org.website}</a><p>${org.radius} km radius</p>`,
                 });
 
                 // Add click event listener to display circle and info window
