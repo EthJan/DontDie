@@ -1,3 +1,3 @@
-#Don't Die, Stay Safe
+# Safelink
 
 Site to help connect people with the world during natural disasters.
