@@ -1,4 +1,4 @@
-.volunteer {
+.report {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,19 +6,19 @@
     width: 80vw;
 }
 
-.volunteer label {
+.report label {
     font-size: 1.25rem;
     margin: 1rem 0 0.5rem 0;
 }
 
-.volunteer input {
+.report input {
     width: 80%;
     padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1.5px solid hsl(0, 0%, 40%);
 }
 
-.volunteer button {
+.report button {
     margin: 3rem 0;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
@@ -31,11 +31,11 @@
     transition: 0.3s;
 }
 
-.volunteer button:hover {
+.report button:hover {
     background-color: hsl(0, 0%, 30%);
 }
 
-.volunteer .errorbutton {
+.report .errorbutton {
     background-color: hsl(0, 0%, 60%);
     color: hsla(0, 0%, 100%, 0.682);
     font-size: 1.25rem;
@@ -43,6 +43,13 @@
     transition: 0.3s;
 }
 
-.volunteer .errorbutton:hover {
+.report .errorbutton:hover {
     background-color: hsl(0, 0%, 60%);
+}
+
+.report select {
+    width: 82%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid hsl(0, 0%, 40%);
 }

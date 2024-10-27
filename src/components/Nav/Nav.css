@@ -4,7 +4,7 @@
     width: 100vw;
     height: 6rem;
     padding: 0 7rem;
-    background: white;
+    background: hsl(0, 0%, 100%, 0.9);
     box-sizing: border-box;
     position: fixed;
     z-index: 1000;
@@ -26,7 +26,7 @@
 .nav-link {
     text-decoration: none;
     color: hsl(0, 0%, 30%);
-    transition: color 0.5s, transform 0.5s;
+    transition: color 0.3s, transform 0.3s;
     font-size: 1.5rem;
 }
 

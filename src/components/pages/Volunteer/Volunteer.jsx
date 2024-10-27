@@ -1,27 +1,84 @@
 import './Volunteer.css';
+import { useState, useEffect } from 'react';
 
 const Volunteer = () => {
-    fetch("http://127.0.0.1:5000/reportSubmit", {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [errors, setErrors] = useState({name: false, phone: false, email: false, address: false});
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // improved user experience by providing feedback to the user when the form is invalid as a future feature
+  // implement when boxes are touched the boxes turn red
+
+  const setNameChange = e => {setName(e.target.value)};
+  const setPhoneChange = e => {setPhone(e.target.value)};
+  const setEmailChange = e => {setEmail(e.target.value)};
+  const setAddressChange = e => {setAddress(e.target.value)};
+
+  useEffect(() => {
+    setIsFormValid(validateForm());
+  }, [name, phone, email, address]);
+
+  const validateForm = () => {
+    const newErrors = {};
+    newErrors.name = !name;
+    newErrors.phone = !phone;
+    newErrors.email = !email || !/\S+@\S+\.\S+/.test(email);
+    newErrors.address = !address;
+  
+    setErrors(newErrors);
+  
+    return !newErrors.name && !newErrors.phone && !newErrors.email && !newErrors.address;
+  };
+
+  const handleSubmit = () => {
+    if (!isFormValid) { return; }
+    fetch("http://127.0.0.1:5000/volunteerSubmit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          category: "flood",
-          address: "89 Chestnut St, Toronto, CA",
-          status: "confirmed",
-          description: "Flooding due to heavy rain",
+          name: name,
+          phone: phone,
+          email: email,
+          address: address
         }),
       })
         .then((response) => response.json())
         .then((data) => console.log(data))
         .catch((error) => console.error("Error:", error));
-      
+      console.log("Submitted");
+      setName("");
+      setPhone("");
+      setEmail("");
+      setAddress("");
+    }
+    
+    // name, phone, email, address
     return (
-        <div className="volunteer">
-            something is showing nice
-		</div>
+      <div className="volunteer">
+        <h1>Volunteer</h1>
+        <h3>Love helping people? Fill out the form below to volunteer!</h3>
+
+        <label htmlFor="name">Name</label>
+        <input type="text" value={name} onChange={setNameChange} placeholder="Firstname Lastname" />
+
+        <label htmlFor="phone">Phone</label>
+        <input type="text" value={phone} onChange={setPhoneChange} placeholder="1234567890" className={errors["phone"] && "errorinput"} />
+
+        <label htmlFor="email">Email</label>
+        <input type="text" value={email} onChange={setEmailChange} placeholder="myemail@email.com" className={errors["email"] && "errorinput"} />
+
+        <label htmlFor="address">Address</label>
+        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" className={errors["address"] && "errorinput"} />
+
+        <button onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid && "errorbutton"}>Submit</button>
+		  </div>
     );
 }
 
 export default Volunteer;
+
