@@ -2,12 +2,30 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Home.css';
 import iconUrl from '../../../assets/wildfire.png';
-
+import Boxselect from '../../Boxselect/Boxselect';
 
 function Home() {
 	const [locations, setLocations] = useState([]);
 	const [error, setError] = useState(null);
-//changes made here
+	const categories = [
+		'fire',
+		'flood',
+		'tornado',
+		'drought',
+		'volcano',
+		'landslide',
+		'earthquake',
+		'avalanche',
+		'snowstorm',
+	];
+	const initSelectedCategories = categories.reduce((ob, cat) => {
+        ob[cat] = false;
+        return ob;
+    }, {});
+
+    const [selectedCategories, setSelectedCategories] = useState(initSelectedCategories);
+
+	//changes made here
 	const fetchLocations = () => {
         axios.get('http://127.0.0.1:5000/api/locations')
             .then(response => {
@@ -88,10 +106,7 @@ function Home() {
 				infoWindow.open(map, marker);
 			  });
 			});
-			
 		  }
-		  
-			  
 	}, [locations]);
 
 	return (
@@ -99,11 +114,12 @@ function Home() {
 			{error ? (
 				<p>{error}</p>
 			) : (
-				<div id="map" className="map"></div>
+				<div id="map" className="map">
+					<Boxselect options={categories} selectedOptions={selectedCategories} setSelectedOptions={setSelectedCategories} />
+				</div>
 			)}
 		</div>
 	);
-	
 }
 
 export default Home;
