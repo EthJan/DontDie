@@ -92,7 +92,7 @@ const Volunteer = () => {
         <label htmlFor="address">Address</label>
         <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" />
 
-        <button onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid && "errorbutton"}>Submit</button>
+        <button onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
 		  </div>
     );
 }
