@@ -10,8 +10,6 @@ import iconSnow from '../../../assets/snow.png';
 import iconOver from '../../../assets/over.png';
 import iconHelp from '../../../assets/help.png';
 
-import Boxselect from '../../Boxselect/Boxselect';
-
 function Home() {
     const categories = [
         'fire',
@@ -32,6 +30,7 @@ function Home() {
     const [selectedCategories, setSelectedCategories] = useState(initSelectedCategories);
 
     const [locations, setLocations] = useState([]);
+    const [organizations, setOrganizations] = useState([]);
     const [error, setError] = useState(null);
     const mapRef = useRef(null); // Reference to hold the map instance
     const markersRef = useRef([]); // Reference to hold current markers
@@ -47,8 +46,19 @@ function Home() {
                 setError("Error fetching locations.");
             });
     };
-    const [activeTab, setActiveTab] = useState('home'); // Track the active tab
     
+    const fetchOrganizations = () => {
+        axios.get('http://127.0.0.1:5000/api/organizations') // Adjusted to match the backend endpoint
+        .then(response => {
+            setOrganizations(response.data);
+        })
+        .catch(error => {
+            console.error("Error fetching locations:", error);
+            setError("Error fetching locations.");
+        });
+    };
+    
+    const [activeTab, setActiveTab] = useState('home'); // Track the active tab
 
     useEffect(() => {
         // Reset to the top of the page when on the home tab
@@ -197,8 +207,30 @@ function Home() {
 
                 markersRef.current.push(marker);
             });
+
+            organizations.forEach(org => {
+                const marker = new window.google.maps.Marker({
+                    position: { lat: org.latitude, lng: org.longitude },
+                    map: mapRef.current,
+                    title: org.name,
+                    icon: {
+                        url: iconHelp,
+                        scaledSize: new window.google.maps.Size(100, 100),
+                    },
+                });
+
+                const infoWindow = new window.google.maps.InfoWindow({
+                    content: `<h3>${org.name}</h3><p>${org.radius}</p>`,
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(mapRef.current, marker);
+                });
+
+                markersRef.current.push(marker);
+            })
         }
-    }, [locations]);
+    }, [locations, organizations]);
 
     return (
         <div>

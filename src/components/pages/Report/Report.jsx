@@ -1,6 +1,8 @@
 import './Report.css';
 import { useState, useEffect } from 'react';
 
+import Boxselect from '../../Boxselect/Boxselect';
+
 const Report = () => {
   const [address, setAddress] = useState('');
   const [category, setCategory] = useState('');
@@ -92,6 +94,7 @@ const Report = () => {
         <input type="text" value={description} onChange={setDescriptionChange} placeholder="Roof has been ripped off of houses" />
 
         <button onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
+        <Boxselect />
 		  </div>
     );
 }
