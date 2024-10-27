@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sqlite3
 from geocode import geocode_address  # Ensure this is an importable function
+import logging
 
 # Database setup
 disaster_database = "disaster_detail.db"
@@ -9,8 +10,9 @@ with sqlite3.connect(disaster_database) as conn:
     cursor = conn.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS disaster_data (
-        long REAL,
-        lat REAL,
+        address TEXT,
+        long INT,
+        lat INT,
         category TEXT,
         status TEXT,
         description TEXT
@@ -20,42 +22,75 @@ with sqlite3.connect(disaster_database) as conn:
 
 # Flask app setup
 app = Flask(__name__)
+
 CORS(app)  # Enable CORS for frontend access
 
 # Utility function to add disaster data to the database
-def add_data(longitude, latitude, category, status, description):
+def add_data(address, longitude, latitude, category, status, description):
     with sqlite3.connect(disaster_database) as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO disaster_data (long, lat, category, status, description)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (longitude, latitude, category, status, description))
+            INSERT INTO disaster_data (address, long, lat, category, status, description)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (address, longitude, latitude, category, status, description))
         conn.commit()
     return True
 
 # Route to handle reporting a disaster
-@app.route("/reportSubmit", methods=["POST"])
+@app.route("/reportSubmit", methods=["POST", "GET"])
 def handle_report():
-    data = request.get_json()
-    
-    # Extract fields and validate data
-    category = data.get("category")
-    address = data.get("address")
-    status = data.get("status")
-    description = data.get("description")
+    if request.method == "POST":
+        data = request.get_json()
+        
+        #might need error checking
+        category = data.get("category")
+        address = data.get("address")
+        status = data.get("status")
+        description = data.get("description")
 
-    if not category or not address or not status or not description:
-        return jsonify({"error": "All fields are required"}), 400
+        address_json = {"address": address}
+        #print(address_json)
+        result=(handle_geocode(address_json))
 
-    # Geocode the address
-    address_json = {"address": address}
-    result = handle_geocode(address_json)
-    if not result:
-        return jsonify({"error": "Geocoding failed"}), 400
-    
-    lat, long = result
-    add_data(long, lat, category, status, description)
-    return jsonify({"message": "Disaster report added successfully"}), 201
+        # Debugging line to print the result of geocoding
+        #print("Geocode result:", result)
+
+        # Check if geocoding was successful
+        if not result:
+            logging.error("Geocoding failed. The result is None.")
+            return jsonify({"error": "Could not geocode the provided address"}), 400
+
+        lat = result.get("latitude")
+        long = result.get("longitude")
+
+        add_data(address, long, lat, category, status, description)
+
+        return jsonify({"message": "Disaster report added successfully"}), 201
+
+
+    elif request.method == "GET":
+        category = request.args.get("category")
+        query = "SELECT * FROM disaster_data"
+        if category:
+            query += f" WHERE category = '{category}'"
+            
+        with sqlite3.connect(disaster_database) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+        reports = [] #reports list
+
+        for i in rows:
+            reports.append({
+                "address": i[0],
+                "longitude": i[1],
+                "latitude": i[2],
+                "category": i[3],
+                "status": i[4],
+                "description": i[5]
+            })
+        return jsonify(reports), 200
 
 # Helper function to handle geocoding
 def handle_geocode(data):
@@ -64,11 +99,8 @@ def handle_geocode(data):
 
     address = data.get("address")
     result = geocode_address(address)
-    
-    # Ensure result contains latitude and longitude
-    if isinstance(result, tuple):
-        return result
-    return None
+    return result
+
 
 # Sample disaster locations (static data)
 locations = [
