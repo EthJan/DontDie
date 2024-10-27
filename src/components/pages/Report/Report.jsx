@@ -64,7 +64,7 @@ const Report = () => {
         <h3>Report potential hazards of natural disasters or ongoing natural disasters.</h3>
 
         <label htmlFor="address">Address</label>
-        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" className={errors["address"] && "errorinput"} />
+        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" />
 
         <label htmlFor="category">Category</label>
         <select value={category} onChange={setCategoryChange}>
