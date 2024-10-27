@@ -19,12 +19,12 @@
 }
 
 .volunteer button {
-    margin: 2rem 0;
+    margin: 3rem 0;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     border: none;
     box-shadow: 0 0 2px hsl(0, 0%, 20%);
-    background-color: hsl(0, 0%, 40%);
+    background-color: hwb(0 40% 60%);
     color: white;
     font-size: 1.25rem;
     cursor: pointer;
