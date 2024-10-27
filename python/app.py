@@ -39,7 +39,6 @@ with sqlite3.connect(disaster_database) as conn:
 
 # Flask app setup
 app = Flask(__name__)
-
 CORS(app)  # Enable CORS for frontend access
 
 # Utility function to add disaster data to the database
@@ -307,6 +306,26 @@ def get_reports():
 
     # Return JSON response
     return jsonify(reports)
+
+@app.route('/api/organizations', methods=['GET'])
+def get_organizations():
+    with sqlite3.connect(disaster_database) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, website, o_long, o_lat, radius FROM organization_data")
+        rows = cursor.fetchall()
+
+        organizations = []
+        for row in rows:
+            organizations.append({
+                "name": row[0],
+                "website": row[1],
+                "longitude": row[2],
+                "latitude": row[3],
+                "radius": row[4]
+            })
+
+    return jsonify(organizations)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
