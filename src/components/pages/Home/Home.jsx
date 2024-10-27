@@ -34,6 +34,9 @@ function Home() {
     const [error, setError] = useState(null);
     const mapRef = useRef(null); // Reference to hold the map instance
     const markersRef = useRef([]); // Reference to hold current markers
+    const circleRef = useRef(null); // Reference to hold the circle instance
+    const openInfoWindowRef = useRef(null); // Reference to keep track of the currently open InfoWindow
+
 
     // Function to fetch location data from the backend
     const fetchLocations = () => {
@@ -46,24 +49,24 @@ function Home() {
                 setError("Error fetching locations.");
             });
     };
-    
+
     const fetchOrganizations = () => {
         axios.get('http://127.0.0.1:5000/api/organizations') // Adjusted to match the backend endpoint
-        .then(response => {
-            setOrganizations(response.data);
-        })
-        .catch(error => {
-            console.error("Error fetching locations:", error);
-            setError("Error fetching locations.");
-        });
+            .then(response => {
+                setOrganizations(response.data);
+            })
+            .catch(error => {
+                console.error("Error fetching locations:", error);
+                setError("Error fetching locations.");
+            });
     };
-    
+
     const [activeTab, setActiveTab] = useState('home'); // Track the active tab
 
     useEffect(() => {
         // Reset to the top of the page when on the home tab
         if (activeTab === 'home') {
-            window.scrollTo(0, 0); 
+            window.scrollTo(0, 0);
         }
         if (activeTab === 'about' || activeTab === 'report' || activeTab === 'volunteer') {
             // Allow scrolling on about, volunteer and report pages. 
@@ -80,14 +83,14 @@ function Home() {
     // Check for new location data every 10 seconds
     useEffect(() => {
         fetchLocations(); // Initial fetch
-        const interval = setInterval(fetchLocations, 10000); // Check 
-        return () => clearInterval(interval); // Clear interval on component unmount
+        // const interval = setInterval(fetchLocations, 10000); // Check 
+        // return () => clearInterval(interval); // Clear interval on component unmount
     }, []);
 
     useEffect(() => {
         fetchOrganizations(); // Initial fetch
-        const interval = setInterval(fetchLocations, 10000); // Check 
-        return () => clearInterval(interval); // Clear interval on component unmount
+        // const interval = setInterval(fetchLocations, 10000); // Check 
+        // return () => clearInterval(interval); // Clear interval on component unmount
     }, []);
 
     // Initialize the Google Map once
@@ -137,7 +140,7 @@ function Home() {
         }
 
     }, []);
-    
+
 
     // Function to update markers on the map whenever a location is
     useEffect(() => {
@@ -146,6 +149,7 @@ function Home() {
             markersRef.current.forEach(marker => marker.setMap(null));
             markersRef.current = []; // Reset marker reference
 
+
             const earth = ["drought", "earthquake", "landslide"];
             const fire = ["fire", "volcano"];
             const snow = ["snowstorm", "avalanche"];
@@ -153,6 +157,7 @@ function Home() {
             const air = ["tornado", "storm"];
 
             locations.forEach(location => {
+
                 const marker = new window.google.maps.Marker({
                     position: { lat: location.latitude, lng: location.longitude },
                     map: mapRef.current,
@@ -208,12 +213,18 @@ function Home() {
                 });
 
                 marker.addListener('click', () => {
+                    if (openInfoWindowRef.current) {
+                        openInfoWindowRef.current.close();
+                    }
+                    if (circleRef.current) circleRef.current.setMap(null); // Clear any existing circle
                     infoWindow.open(mapRef.current, marker);
+                    openInfoWindowRef.current = infoWindow;
                 });
-
+                marker.infoWindow = infoWindow;
                 markersRef.current.push(marker);
             });
 
+            // Inside the `useEffect` function where you're iterating over `organizations`
             organizations.forEach(org => {
                 const marker = new window.google.maps.Marker({
                     position: { lat: org.latitude, lng: org.longitude },
@@ -229,10 +240,40 @@ function Home() {
                     content: `<h3>${org.name}</h3><p>${org.radius} km radius</p>`,
                 });
 
+                // Add click event listener to display circle and info window
                 marker.addListener('click', () => {
+                    // Close any open info windows and remove any existing circles
+                    markersRef.current.forEach(marker => marker.infoWindow?.close());
+                    if (circleRef.current) circleRef.current.setMap(null); // Clear any existing circle
+
+                    // Open the info window for the current marker
                     infoWindow.open(mapRef.current, marker);
+
+                    // Create a circle around the marker
+                    circleRef.current = new window.google.maps.Circle({
+                        map: mapRef.current,
+                        center: marker.getPosition(),
+                        radius: org.radius * 1000, // Convert from km to meters
+                        strokeColor: '#6c757d', // Customize stroke color
+                        strokeOpacity: 0.8, // Customize stroke opacity
+                        strokeWeight: 2, // Customize stroke weight
+                        fillColor: '#adb5bd', // Customize fill color
+                        fillOpacity: 0.4, // Customize fill opacity for transparency
+                    });
+
+                    console.log("Circle created:", circleRef.current); // Debugging line to check circle creation
                 });
 
+                // Window close listener
+                infoWindow.addListener('closeclick', () => {
+                    if (circleRef.current) {
+                        circleRef.current.setMap(null); // Remove the circle from the map
+                    }
+                });
+
+
+                // Store the marker and its info window
+                marker.infoWindow = infoWindow;
                 markersRef.current.push(marker);
             })
         }
