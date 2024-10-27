@@ -10,9 +10,3 @@
   height: 100vh; /* Full viewport height */
   width: 100vw;
 }
-
-.map-container {
-  flex: 1; /* Takes available space */
-  height: 100vh;
-  max-width: 100px;
-}
