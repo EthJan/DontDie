@@ -2,6 +2,7 @@
   text-align: center;
 }
 
+
 .map-wrapper {
   display: flex;
   justify-content: center;
@@ -12,6 +13,6 @@
 
 .map-container {
   flex: 1; /* Takes available space */
-  height: 80vh;
-  max-width: 800px;
+  height: 100vh;
+  max-width: 100px;
 }
