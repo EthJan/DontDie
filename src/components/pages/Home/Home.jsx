@@ -8,7 +8,28 @@ import iconWarn from '../../../assets/warning.png';
 import iconWater from '../../../assets/water.png';
 import iconSnow from '../../../assets/snow.png';
 import iconOver from '../../../assets/over.png';
+
+import Boxselect from '../../Boxselect/Boxselect';
+
 function Home() {
+	const categories = [
+		'fire',
+		'flood',
+		'tornado',
+		'drought',
+		'volcano',
+		'landslide',
+		'earthquake',
+		'avalanche',
+		'snowstorm',
+	];
+	const initSelectedCategories = categories.reduce((ob, cat) => {
+        ob[cat] = false;
+        return ob;
+    }, {});
+
+    const [selectedCategories, setSelectedCategories] = useState(initSelectedCategories);
+	
     const [locations, setLocations] = useState([]);
     const [error, setError] = useState(null);
     const mapRef = useRef(null); // Reference to hold the map instance
@@ -78,7 +99,7 @@ function Home() {
 			
 			const earth = ["drought", "earthquake", "landslide"];
             const fire = ["fire", "volcano"];
-            const snow = ["blizzard", "avalanche"]; 
+            const snow = ["snowstorm", "avalanche"]; 
             const water = ["flood", "tsunami", "hurricane"]; 
             const air = ["tornado", "storm"]; 
 
@@ -151,7 +172,9 @@ function Home() {
             {error ? (
                 <p>{error}</p>
             ) : (
-                <div id="map" className="home"></div>
+                <div id="map" className="home">
+					{/* <Boxselect options={categories} selectedOptions={selectedCategories} setSelectedOptions={setSelectedCategories} /> */}
+				</div>
             )}
         </div>
     );

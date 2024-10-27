@@ -1,10 +1,9 @@
 .boxselect {
     display: flex;
     flex-direction: column;
-    z-index: 20;
-    position: absolute;
-    top: 50vh;
-    left: 50nw;
+    position: fixed;
+    bottom: 50;
+    right: 50;
     width: 100%;
     background-color: #fff;
     border: 1px solid rgba(36, 52, 123, 0.5);
