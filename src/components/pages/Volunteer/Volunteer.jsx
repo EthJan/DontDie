@@ -22,11 +22,15 @@ const Volunteer = () => {
   }, [name, phone, email, address]);
 
   const validateForm = () => {
-    name ? errors.name = false : errors.name = true;
-    !phone || !/^\d{9,11}$/.test(phone) ? errors.phone = true : errors.phone = false;
-    !email || !/\S+@\S+\.\S+/.test(email) ? errors.email = true : errors.email = false;
-    address ? errors.address = false : errors.address = true;
-    return !errors.name && !errors.phone && !errors.email && !errors.address;
+    const newErrors = {};
+    newErrors.name = !name;
+    newErrors.phone = !phone;
+    newErrors.email = !email || !/\S+@\S+\.\S+/.test(email);
+    newErrors.address = !address;
+  
+    setErrors(newErrors);
+  
+    return !newErrors.name && !newErrors.phone && !newErrors.email && !newErrors.address;
   };
 
   const handleSubmit = () => {
@@ -56,6 +60,9 @@ const Volunteer = () => {
     // name, phone, email, address
     return (
       <div className="volunteer">
+        <h1>Volunteer</h1>
+        <h3>Love helping people? Fill out the form below to volunteer!</h3>
+
         <label htmlFor="name">Name</label>
         <input type="text" value={name} onChange={setNameChange} placeholder="Firstname Lastname" />
 
