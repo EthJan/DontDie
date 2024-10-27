@@ -7,18 +7,29 @@ import iconUrl from '../../../assets/wildfire.png';
 function Home() {
 	const [locations, setLocations] = useState([]);
 	const [error, setError] = useState(null);
+//changes made here
+	const fetchLocations = () => {
+        axios.get('http://127.0.0.1:5000/api/locations')
+            .then(response => {
+                setLocations(response.data);
+            })
+            .catch(error => {
+                console.error("Error fetching locations:", error);
+                setError("Error fetching locations.");
+            });
+    };
 
-	useEffect(() => {
-		// Api insert
-		axios.get('http://127.0.0.1:5000/api/locations')
-			.then(response => {
-				setLocations(response.data);
-			})
-			.catch(error => {
-				console.error("Error fetching locations:", error);
-				setError("Error fetching locations.");
-			});
-	}, []);
+    useEffect(() => {
+        // Initial fetch of locations
+        fetchLocations();
+
+        // Polling every 10 seconds to get updated locations
+        const interval = setInterval(fetchLocations, 10000); // 10 seconds
+
+        // Clear the interval on component unmount
+        return () => clearInterval(interval);
+    }, []);
+
 
 	useEffect(() => {
 		if (!window.google) {
@@ -56,7 +67,7 @@ function Home() {
 			};
 		  
 			const map = new window.google.maps.Map(document.getElementById('map'), mapOptions);
-			window.onload = initMap;
+		  window.onload = initMap;
 
 			locations.forEach(location => {
 			  const marker = new window.google.maps.Marker({
@@ -77,7 +88,6 @@ function Home() {
 				infoWindow.open(map, marker);
 			  });
 			});
-			// Load window up after 
 			
 		  }
 		  
