@@ -8,28 +8,29 @@ import iconWarn from '../../../assets/warning.png';
 import iconWater from '../../../assets/water.png';
 import iconSnow from '../../../assets/snow.png';
 import iconOver from '../../../assets/over.png';
+import iconHelp from '../../../assets/help.png';
 
 import Boxselect from '../../Boxselect/Boxselect';
 
 function Home() {
-	const categories = [
-		'fire',
-		'flood',
-		'tornado',
-		'drought',
-		'volcano',
-		'landslide',
-		'earthquake',
-		'avalanche',
-		'snowstorm',
-	];
-	const initSelectedCategories = categories.reduce((ob, cat) => {
+    const categories = [
+        'fire',
+        'flood',
+        'tornado',
+        'drought',
+        'volcano',
+        'landslide',
+        'earthquake',
+        'avalanche',
+        'snowstorm',
+    ];
+    const initSelectedCategories = categories.reduce((ob, cat) => {
         ob[cat] = false;
         return ob;
     }, {});
 
     const [selectedCategories, setSelectedCategories] = useState(initSelectedCategories);
-	
+
     const [locations, setLocations] = useState([]);
     const [error, setError] = useState(null);
     const mapRef = useRef(null); // Reference to hold the map instance
@@ -46,11 +47,30 @@ function Home() {
                 setError("Error fetching locations.");
             });
     };
+    const [activeTab, setActiveTab] = useState('home'); // Track the active tab
+    
 
-    // Poll for new location data every 10 seconds
+    useEffect(() => {
+        // Reset to the top of the page when on the home tab
+        if (activeTab === 'home') {
+            window.scrollTo(0, 0); 
+        }
+        if (activeTab === 'about' || activeTab === 'report' || activeTab === 'volunteer') {
+            // Allow scrolling on about, volunteer and report pages. 
+            document.body.style.overflow = 'auto';
+        } else {
+            // Disable scrolling for other tabs
+            document.body.style.overflow = 'hidden';
+        }
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [activeTab]);
+
+    // Check for new location data every 10 seconds
     useEffect(() => {
         fetchLocations(); // Initial fetch
-        const interval = setInterval(fetchLocations, 10000); // Polling every 10 seconds
+        const interval = setInterval(fetchLocations, 10000); // Check 
         return () => clearInterval(interval); // Clear interval on component unmount
     }, []);
 
@@ -68,7 +88,7 @@ function Home() {
 
         function initializeMap() {
             // Create a new Google Map and save it in the mapRef
-           
+
             mapRef.current = new window.google.maps.Map(document.getElementById('map'), {
                 center: { lat: 40.0, lng: -95.0 },
                 zoom: 5,
@@ -99,8 +119,9 @@ function Home() {
                 gestureHandling: "greedy",
             });
         }
-        
+
     }, []);
+    
 
     // Function to update markers on the map whenever a location is
     useEffect(() => {
@@ -108,19 +129,19 @@ function Home() {
             // Clear existing markers
             markersRef.current.forEach(marker => marker.setMap(null));
             markersRef.current = []; // Reset marker reference
-			
-			const earth = ["drought", "earthquake", "landslide"];
+
+            const earth = ["drought", "earthquake", "landslide"];
             const fire = ["fire", "volcano"];
-            const snow = ["snowstorm", "avalanche"]; 
-            const water = ["flood", "tsunami", "hurricane"]; 
-            const air = ["tornado", "storm"]; 
+            const snow = ["snowstorm", "avalanche"];
+            const water = ["flood", "tsunami", "hurricane"];
+            const air = ["tornado", "storm"];
 
             locations.forEach(location => {
                 const marker = new window.google.maps.Marker({
                     position: { lat: location.latitude, lng: location.longitude },
                     map: mapRef.current,
                     title: location.address || location.category,
-					// Icon check and assign
+                    // Icon check and assign
                     icon: (() => {
                         if (location.category === 'hazard') {
                             return {
@@ -167,7 +188,7 @@ function Home() {
                 });
 
                 const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<h3>${location.address || location.category}</h3><p>${location.description}</p>`,
+                    content: `<h3>${location.status + ' ' + location.category || "@" + location.address}</h3><p>${location.description}</p>`,
                 });
 
                 marker.addListener('click', () => {
@@ -185,8 +206,8 @@ function Home() {
                 <p>{error}</p>
             ) : (
                 <div id="map" className="home">
-					{/* <Boxselect options={categories} selectedOptions={selectedCategories} setSelectedOptions={setSelectedCategories} /> */}
-				</div>
+                    {/* <Boxselect options={categories} selectedOptions={selectedCategories} setSelectedOptions={setSelectedCategories} /> */}
+                </div>
             )}
         </div>
     );
