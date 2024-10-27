@@ -4,7 +4,7 @@
     width: 100vw;
     height: 6rem;
     padding: 0 7rem;
-    background: white;
+    background: hsl(0, 0%, 100%, 0.9);
     box-sizing: border-box;
     position: fixed;
     z-index: 1000;
