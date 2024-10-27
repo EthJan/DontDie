@@ -210,7 +210,7 @@ def handle_report():
                 "status": i[4],
                 "description": i[5]
             })
-        return jsonify(reports), 200
+        return reports, 200
 
 # Helper function to handle geocoding
 def handle_geocode(data):
