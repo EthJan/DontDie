@@ -68,13 +68,24 @@ function Home() {
 
         function initializeMap() {
             // Create a new Google Map and save it in the mapRef
+           
             mapRef.current = new window.google.maps.Map(document.getElementById('map'), {
                 center: { lat: 40.0, lng: -95.0 },
                 zoom: 5,
                 minZoom: 3,
                 zoomControl: true,
+                // Set position of ui widgets
                 zoomControlOptions: {
-                    position: window.google.maps.ControlPosition.TOP_LEFT,
+                    position: window.google.maps.ControlPosition.LEFT_BOTTOM, // Move zoom controls to bottom left
+                },
+                fullscreenControl: true,
+                fullscreenControlOptions: {
+                    position: window.google.maps.ControlPosition.LEFT_BOTTOM, // Position the fullscreen control
+                },
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                    style: window.google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: window.google.maps.ControlPosition.BOTTOM_LEFT, // Position map type control
                 },
                 restriction: {
                     latLngBounds: {
@@ -88,6 +99,7 @@ function Home() {
                 gestureHandling: "greedy",
             });
         }
+        
     }, []);
 
     // Function to update markers on the map whenever a location is
