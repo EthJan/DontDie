@@ -156,49 +156,49 @@ function Home() {
                         if (location.category === 'hazard') {
                             return {
                                 url: iconWarn,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (location.category === 'over') {
                             return {
                                 url: iconOver,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (earth.includes(location.category)) {
                             return {
                                 url: iconEarth,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (fire.includes(location.category)) {
                             return {
                                 url: iconFire,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (air.includes(location.category)) {
                             return {
                                 url: iconAir,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (water.includes(location.category)) {
                             return {
                                 url: iconWater,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else if (snow.includes(location.category)) {
                             return {
                                 url: iconSnow,
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         } else {
                             return {
                                 url: iconWarn, // Default icon if no match
-                                scaledSize: new window.google.maps.Size(50, 50),
+                                scaledSize: new window.google.maps.Size(80, 80),
                             };
                         }
                     })(),
                 });
 
                 const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<h3>${location.status + ' ' + location.category || "@" + location.address}</h3><p>${location.description}</p>`,
+                    content: `<h3>${location.status + ' ' + location.category}</h3><p>${location.address}</p><p>${location.description}</p>`,
                 });
 
                 marker.addListener('click', () => {
