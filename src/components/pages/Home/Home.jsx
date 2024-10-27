@@ -84,6 +84,12 @@ function Home() {
         return () => clearInterval(interval); // Clear interval on component unmount
     }, []);
 
+    useEffect(() => {
+        fetchOrganizations(); // Initial fetch
+        const interval = setInterval(fetchLocations, 10000); // Check 
+        return () => clearInterval(interval); // Clear interval on component unmount
+    }, []);
+
     // Initialize the Google Map once
     useEffect(() => {
         if (!window.google) {
@@ -215,12 +221,12 @@ function Home() {
                     title: org.name,
                     icon: {
                         url: iconHelp,
-                        scaledSize: new window.google.maps.Size(100, 100),
+                        scaledSize: new window.google.maps.Size(30, 30),
                     },
                 });
 
                 const infoWindow = new window.google.maps.InfoWindow({
-                    content: `<h3>${org.name}</h3><p>${org.radius}</p>`,
+                    content: `<h3>${org.name}</h3><p>${org.radius} km radius</p>`,
                 });
 
                 marker.addListener('click', () => {
