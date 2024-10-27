@@ -241,7 +241,7 @@ def handle_report():
                 "status": i[4],
                 "description": i[5]
             })
-        return jsonify(reports), 200
+        return reports, 200
 
 @app.route("/batchReportSubmit", methods=["POST"])
 def batch_report_submit():
@@ -284,17 +284,29 @@ def handle_geocode(data):
     return result
 
 
-# Sample disaster locations (static data)
-locations = [
-    {"id": 1, "lat": 37.7749, "lng": -122.4194},
-    {"id": 2, "lat": 34.0522, "lng": -118.2437},
-    {"id": 3, "lat": 40.7128, "lng": -74.0060},
-]
-# Route to get sample disaster locations
-@app.route('/api/locations', methods=['GET'])
-def get_locations():
-    # API endpoint to get location data
-    return jsonify(locations)
+# New route to get disaster reports from the database
+@app.route('/api/reports', methods=['GET'])
+def get_reports():
+    # Retrieve data from the disaster_data table
+    with sqlite3.connect(disaster_database) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT address, d_long, d_lat, category, status, description FROM disaster_data")
+        rows = cursor.fetchall()
+
+    # Convert rows into JSON format
+    reports = []
+    for row in rows:
+        reports.append({
+            "address": row[0],
+            "longitude": row[1],
+            "latitude": row[2],
+            "category": row[3],
+            "status": row[4],
+            "description": row[5]
+        })
+
+    # Return JSON response
+    return jsonify(reports)
 
 if __name__ == '__main__':
     app.run(debug=True)

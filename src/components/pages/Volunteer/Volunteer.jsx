@@ -1,5 +1,6 @@
 import './Volunteer.css';
 import { useState, useEffect } from 'react';
+import VolunteerMatch from './VolunteerMatch';
 
 const Volunteer = () => {
   const [name, setName] = useState('');
@@ -8,6 +9,9 @@ const Volunteer = () => {
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({name: false, phone: false, email: false, address: false});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const [matchedOrganizations, setMatchedOrganizations] = useState([]);
 
   // improved user experience by providing feedback to the user when the form is invalid as a future feature
   // implement when boxes are touched the boxes turn red
@@ -48,9 +52,14 @@ const Volunteer = () => {
         }),
       })
         .then((response) => response.json())
-        .then((data) => console.log(data))
+        .then((data) => {
+          console.log(data["matched_organizations"]);
+          setMatchedOrganizations(data["matched_organizations"]);
+        })
         .catch((error) => console.error("Error:", error));
       console.log("Submitted");
+      setIsSubmitted(true);
+
       setName("");
       setPhone("");
       setEmail("");
@@ -67,15 +76,17 @@ const Volunteer = () => {
         <input type="text" value={name} onChange={setNameChange} placeholder="Firstname Lastname" />
 
         <label htmlFor="phone">Phone</label>
-        <input type="text" value={phone} onChange={setPhoneChange} placeholder="1234567890" className={errors["phone"] && "errorinput"} />
+        <input type="text" value={phone} onChange={setPhoneChange} placeholder="1234567890" />
 
         <label htmlFor="email">Email</label>
-        <input type="text" value={email} onChange={setEmailChange} placeholder="myemail@email.com" className={errors["email"] && "errorinput"} />
+        <input type="text" value={email} onChange={setEmailChange} placeholder="myemail@email.com" />
 
         <label htmlFor="address">Address</label>
-        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" className={errors["address"] && "errorinput"} />
+        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" />
 
-        <button onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid && "errorbutton"}>Submit</button>
+        <button onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
+
+        {isSubmitted && <VolunteerMatch matchedOrganizations={matchedOrganizations} />}
 		  </div>
     );
 }
