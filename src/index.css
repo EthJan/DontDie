@@ -3,7 +3,7 @@
   background-color: hsl(0, 0%, 90%);
 }
 
-.home, .report, .safety, .volunteer {
+.home, .report, .volunteer {
   background-color: hsl(0, 0%, 80%);
   display: flex;
   flex-direction: column;
@@ -16,8 +16,6 @@
 body {
   margin: 0;
 }
-
-
 
 #map {
   height: 100vh;
