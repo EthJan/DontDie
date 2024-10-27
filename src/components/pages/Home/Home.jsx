@@ -56,7 +56,7 @@ function Home() {
 			};
 		  
 			const map = new window.google.maps.Map(document.getElementById('map'), mapOptions);
-		  
+			window.onload = initMap;
 
 			locations.forEach(location => {
 			  const marker = new window.google.maps.Marker({
@@ -78,7 +78,7 @@ function Home() {
 			  });
 			});
 			// Load window up after 
-			window.onload = initMap;
+			
 		  }
 		  
 			  
