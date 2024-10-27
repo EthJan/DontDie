@@ -93,6 +93,37 @@ def handle_organization():
 
     return jsonify({"message": "Organization added successfully"}), 201
 
+# Handle multiple organizations submission
+@app.route("/batchOrganizationSubmit", methods=["POST"])
+def batch_organization_submit():
+    organizations = request.get_json()  # Expecting a list of organization dictionaries
+    if not isinstance(organizations, list):
+        return jsonify({"error": "Input should be a list of organization objects"}), 400
+
+    count = 0  # Counter for successfully added organizations
+
+    for org in organizations:
+        # Extract organization data
+        name = org.get("name")
+        address = org.get("address")
+        website = org.get("website")
+        radius = org.get("radius")
+
+        # Validate required fields
+        if not (name and address and website and radius):
+            return jsonify({"error": "Missing fields for one or more organizations"}), 400
+
+        # Geocode the address to get latitude and longitude
+        address_json = {"address": address}
+        result = handle_geocode(address_json)
+        olat = result.get("latitude")
+        olong = result.get("longitude")
+
+        # Add organization data to the database
+        add_organization_data(name, radius, website, olong, olat)
+        count += 1  # Increment the counter for each successful addition
+
+    return jsonify({"message": f"{count} Organizations added successfully"}), 201
 
 def haversine_distance(lat1, lng1, lat2, lng2):
     # Calculate the great-circle distance between two points on the Earth
@@ -211,6 +242,37 @@ def handle_report():
                 "description": i[5]
             })
         return reports, 200
+
+@app.route("/batchReportSubmit", methods=["POST"])
+def batch_report_submit():
+    reports = request.get_json()  # Expecting a list of report dictionaries
+    if not isinstance(reports, list):
+        return jsonify({"error": "Input should be a list of report objects"}), 400
+
+    count = 0  # Counter for successfully added reports
+
+    for report in reports:
+        # Extract report data
+        category = report.get("category")
+        address = report.get("address")
+        status = report.get("status")
+        description = report.get("description")
+
+        # Validate required fields
+        if not (category and address and status and description):
+            return jsonify({"error": "Missing fields for one or more reports"}), 400
+
+        # Geocode the address to get latitude and longitude
+        address_json = {"address": address}
+        result = handle_geocode(address_json)
+        lat = result.get("latitude")
+        long = result.get("longitude")
+
+        # Add report data to the database
+        add_data(long, lat, category, status, description)
+        count += 1  # Increment the counter for each successful addition
+
+    return jsonify({"message": f"{count} Disaster reports added successfully"}), 201
 
 # Helper function to handle geocoding
 def handle_geocode(data):
