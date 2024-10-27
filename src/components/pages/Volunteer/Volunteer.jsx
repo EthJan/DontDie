@@ -51,6 +51,23 @@ const Volunteer = () => {
         .then((data) => console.log(data))
         .catch((error) => console.error("Error:", error));
       console.log("Submitted");
+
+      fetch("http://127.0.0.1:5000/volunteerSubmit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          phone: phone,
+          email: email,
+          address: address
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error("Error:", error));
+
       setName("");
       setPhone("");
       setEmail("");
@@ -67,13 +84,13 @@ const Volunteer = () => {
         <input type="text" value={name} onChange={setNameChange} placeholder="Firstname Lastname" />
 
         <label htmlFor="phone">Phone</label>
-        <input type="text" value={phone} onChange={setPhoneChange} placeholder="1234567890" className={errors["phone"] && "errorinput"} />
+        <input type="text" value={phone} onChange={setPhoneChange} placeholder="1234567890" />
 
         <label htmlFor="email">Email</label>
-        <input type="text" value={email} onChange={setEmailChange} placeholder="myemail@email.com" className={errors["email"] && "errorinput"} />
+        <input type="text" value={email} onChange={setEmailChange} placeholder="myemail@email.com" />
 
         <label htmlFor="address">Address</label>
-        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" className={errors["address"] && "errorinput"} />
+        <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" />
 
         <button onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid && "errorbutton"}>Submit</button>
 		  </div>

@@ -67,7 +67,7 @@ const Report = () => {
         <input type="text" value={address} onChange={setAddressChange} placeholder="89 Chestnut Street, Toronto, CA" className={errors["address"] && "errorinput"} />
 
         <label htmlFor="category">Category</label>
-        <select value={category} onChange={setCategoryChange} className={errors["category"] && "errorinput"}>
+        <select value={category} onChange={setCategoryChange}>
           <option value="">Select Category</option>
           <option value="fire">Fire</option>
           <option value="flood">Flood</option>
@@ -81,7 +81,7 @@ const Report = () => {
         </select>
 
         <label htmlFor="status">Status</label>
-        <select value={status} onChange={setStatusChange} className={errors["status"] && "errorinput"}>
+        <select value={status} onChange={setStatusChange}>
           <option value="">Select Status</option>
           <option value="hazard">Hazard</option>
           <option value="ongoing">Ongoing</option>
@@ -89,9 +89,9 @@ const Report = () => {
         </select>
 
         <label htmlFor="description">Description</label>
-        <input type="text" value={description} onChange={setDescriptionChange} placeholder="Roof has been ripped off of houses" className={errors["description"] && "errorinput"} />
+        <input type="text" value={description} onChange={setDescriptionChange} placeholder="Roof has been ripped off of houses" />
 
-        <button onClick={handleSubmit} disabled={!isFormValid} className={!isFormValid && "errorbutton"}>Submit</button>
+        <button onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
 		  </div>
     );
 }
