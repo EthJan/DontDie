@@ -1,0 +1,48 @@
+.volunteer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80vw;
+}
+
+.volunteer label {
+    font-size: 1.25rem;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.volunteer input {
+    width: 80%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid hsl(0, 0%, 40%);
+}
+
+.volunteer button {
+    margin: 2rem 0;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0 2px hsl(0, 0%, 20%);
+    background-color: hsl(0, 0%, 40%);
+    color: white;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.volunteer button:hover {
+    background-color: hsl(0, 0%, 30%);
+}
+
+.volunteer .errorbutton {
+    background-color: hsl(0, 0%, 60%);
+    color: hsla(0, 0%, 100%, 0.682);
+    font-size: 1.25rem;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.volunteer .errorbutton:hover {
+    background-color: hsl(0, 0%, 60%);
+}
