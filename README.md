@@ -11,3 +11,14 @@ SafeLink is a crowdsourced disaster mapping platform using a web-based applicati
 ### **How we built it**
 The front end was designed for simplicity and accessibility, we implemented a clean interface with minimal clicks required to post updates or locate resources. React.js was used for a responsive interface that can handle fast data refreshes. SafeLink’s backend was built to support real-time data handling. This required a robust database and server setup to quickly process location data and user input which was handled by Flask & SQL. To implement precise location tracking and visualization, we integrated geolocation services. This involved Google Maps & Geocoding API integrations.
 
+### **Running the app**
+1. Make sure you are in the base folder
+2. `npm i` to install front-end dependencies
+3. `npm run dev` to run the React front-end
+4. ctrl + left click the url that shows up to open it (app will not work yet since back-end is not running)
+5. `cd python` to navigate to the python folder
+6. `python -m venv .venv` (Windows) or `python3 -m venv .venv` (Mac/Linux) to create the virtual environment
+7. `.venv/Scripts/activate` (Windows) or `source .venv/bin/activate` (Mac/Linux) to activate the virtual environment
+8. `pip install -r requirements.txt` to install dependencies in the virtual environment
+9. `flask run` to run the back-end (might have to use full path if you don't have flask on PATH)
+10. Go to the url before and refresh
